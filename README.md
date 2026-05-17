@@ -13,8 +13,8 @@
 
 ## Технологии
 
-**Backend:** Django, DRF, PostgreSQL, Gunicorn, JWT  
-**Frontend:** React, React Router, CSS Modules  
+**Backend:** Django, DRF, PostgreSQL, Gunicorn, JWT
+**Frontend:** React, React Router, CSS Modules
 **DevOps:** Docker, Docker Compose, Nginx, GitHub Actions, Docker Hub
 
 ## Контейнеры
