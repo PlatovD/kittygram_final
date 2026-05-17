@@ -1,27 +1,61 @@
-version: '3'
-
 volumes:
   pg_data:
   static:
+  media:
+
+networks:
+  app_net:
+    driver: bridge
 
 services:
   db:
     image: postgres:13
+    env_file:
+      - .env
+    expose:
+      - 5432
+    networks:
+      - app_net
     volumes:
       - pg_data:/var/lib/postgresql/data
+
   backend:
     build: ./backend/
     env_file: .env
+    networks:
+      - app_net
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    depends_on:
+      - db
+    restart: always
+    command: >
+      sh -c "python manage.py migrate &&
+             gunicorn --bind 0.0.0.0:8000 kittygram_backend.wsgi"
+
   frontend:
     env_file: .env
     build: ./frontend/
-    command: cp -r /app/build/. /static/
+    networks:
+      - app_net
     volumes:
       - static:/static
+    command: >
+      sh -c "cp -r /app/build/. /static/ &&
+                   mv /static/static/* /static/ &&
+                   rm -rf /static/static"
+
   gateway:
     build: ./nginx/
     env_file: .env
+    networks:
+      - app_net
     ports:
       - 9000:80
     volumes:
       - static:/static
+      - media:/media
+    depends_on:
+      - backend
+      - frontend

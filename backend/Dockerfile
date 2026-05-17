@@ -4,10 +4,9 @@ RUN groupadd -r appgroup && \
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --upgrade pip &&\
-    pip install gunicorn==20.1.0 && \
     pip install -r requirements.txt --no-cache-dir
 COPY . .
+RUN python manage.py collectstatic --noinput
 EXPOSE 8000
 USER appuser
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "kittygram_backend.wsgi"]
-
